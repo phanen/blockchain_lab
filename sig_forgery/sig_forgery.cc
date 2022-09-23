@@ -31,7 +31,7 @@ int rsa_verify(const mpz_t e, const mpz_t n, const mpz_t m, const mpz_t sig)
     mpz_t res;
     mpz_init(res);
     mpz_powm(res, sig, e, n);
-    return mpz_cmp(res, m);
+    return !mpz_cmp(res, m);
 }
 
 int main()
@@ -39,11 +39,11 @@ int main()
     const char *msg = "Alice owes Bob $500.";
     mpz_t m, sig, m1, tmp, n1, e1;
     mpz_inits(m, sig, m1, tmp, n1, e1, NULL);
-    mpz_set(m1, m); // copy
     mpz_set_str(n1, N, 10);
     mpz_set_str(e1, e, 10);
 
     encode(m, msg);
+    mpz_set(m1, m); // copy
     gmp_printf("Alice's message(encoded): 0x%Zx\n\n", m);
 
     // factorization of m with a factor base, collecting index
@@ -79,7 +79,6 @@ int main()
             mpz_mod(sig, sig, n1);
         }
     }
-
     // Verify
     if (rsa_verify(e1, n1, m1, sig))
     {
