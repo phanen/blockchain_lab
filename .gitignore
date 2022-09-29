@@ -1,2 +1,10 @@
+
+
+bin/
+lib/
 build/
+
+
 *.out
+*.o
+*.a
