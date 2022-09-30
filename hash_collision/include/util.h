@@ -1,6 +1,6 @@
-#include <stdint.h>
-#include <iostream>
+#pragma once
 
+// utilize
 template <class T>
 int print_array(T *arr, std::size_t sz)
 {
@@ -19,41 +19,108 @@ inline void dump_buf(uint8_t *buf, std::size_t len, uint8_t sep = ' ')
     for (std::size_t i = 0; i < len; i++)
     {
         printf("0x%.2x%c", buf[i], sep);
-        if ((i + 1) % 16 == 0)
+        if ((i + 1) % 8 == 0)
             printf("\n");
     }
     printf("\n");
 }
 
-const char *str1 = "0THdAsXm7sRpPZoGmK/5XC/KtYcSRn6rQARYPrj7f4lVrTQGCfSzAoPkiIMlcUFaCFEl6PfNyZ/ZHb3ygDc8W5YLHdHcQXuc5NiX9FplVdU1c5rH8Ov9DDAp8WbRCbGPdSd/eTDVXOsi6K26ecwVXO10y91fxdNtsZsK2DXMp+M=";
-const char *str2 = "0THdAsXm7sRpPZoGmK/5XC/KtQcSRn6rQARYPrj7f4lVrTQGCfSzAoPkiIMl8UFaCFEl6PfNyZ/ZHb1ygDc8W5YLHdHcQXuc5NiX9FplVdU1c5pH8Ov9DDAp8WbRCbGPdSd/eTDVXOsi6K26eUwVXO10y91fxdNtsZsKWDXMp+M=";
+void test_large_file(const char *filename)
+{
+    const size_t dgst_len = MD5_DIGST_SZ_IN_BT;
+    uint8_t dgst[dgst_len];
 
-uint8_t tab[64]{
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-    'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-    'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-    'w', 'x', 'y', 'z', '0', '1', '2', '3',
-    '4', '5', '6', '7', '8', '9', '+', '/' //
-};
+    // Start measuring time
+    struct timeval begin, end;
+    gettimeofday(&begin, 0);
+    const size_t byte_len = 1 << 20;
+    uint8_t buf[byte_len];
+    FILE *finp = fopen(filename, "r");
+    if (finp == NULL)
+    {
+        printf("fail to open\n");
+        return;
+    }
 
-uint8_t inv_tab[128]{
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 62, 0, 0, 0, 63,
-    52, 53, 54, 55, 56, 57, 58, 59,
-    60, 61, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 2, 3, 4, 5, 6,
-    7, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21, 22,
-    23, 24, 25, 0, 0, 0, 0, 0,
-    0, 26, 27, 28, 29, 30, 31, 32,
-    33, 34, 35, 36, 37, 38, 39, 40,
-    41, 42, 43, 44, 45, 46, 47, 48,
-    49, 50, 51, 0, 0, 0, 0, 0, //
-};
+#ifdef Progress_Log
+    printf("Hashing... finished:\n");
+#endif
+
+    md5_ctx_t ctx;
+    md5_init(&ctx);
+    int cnt = 0;
+    size_t cur_len = 0;
+#ifdef Progress_Log
+    printf("1234567");
+#endif
+
+    while (cur_len = fread(buf, 1, byte_len, finp))
+    {
+#ifdef Progress_Log
+        printf("\b\b\b\b\b\b\b%4d MB", cnt++);
+#endif
+        md5_update(&ctx, buf, cur_len);
+    }
+
+    md5_finish(&ctx, dgst);
+
+    // Stop measuring time and calculate the elapsed time
+    gettimeofday(&end, 0);
+    long seconds = end.tv_sec - begin.tv_sec;
+    long microseconds = end.tv_usec - begin.tv_usec;
+    double elapsed = seconds + microseconds * 1e-6;
+    printf("\nTime measured: %.3f seconds.\n", elapsed);
+
+    dump_buf(dgst, dgst_len);
+    fclose(finp);
+}
+
+void test_large_file_sha(const char *filename)
+{
+    const size_t dgst_len = SHA1_DIGST_SZ_IN_BT;
+    uint8_t dgst[dgst_len];
+
+    // Start measuring time
+    struct timeval begin, end;
+    gettimeofday(&begin, 0);
+    const size_t byte_len = 1 << 20;
+    uint8_t buf[byte_len];
+    FILE *finp = fopen(filename, "r");
+    if (finp == NULL)
+    {
+        printf("fail to open\n");
+        return;
+    }
+
+#ifdef Progress_Log
+    printf("Hashing... finished:\n");
+#endif
+
+    sha1_ctx_t ctx;
+    sha1_init(&ctx);
+    int cnt = 0;
+    size_t cur_len = 0;
+#ifdef Progress_Log
+    printf("1234567");
+#endif
+
+    while (cur_len = fread(buf, 1, byte_len, finp))
+    {
+#ifdef Progress_Log
+        printf("\b\b\b\b\b\b\b%4d MB", cnt++);
+#endif
+        sha1_update(&ctx, buf, cur_len);
+    }
+
+    sha1_finish(&ctx, dgst);
+
+    // Stop measuring time and calculate the elapsed time
+    gettimeofday(&end, 0);
+    long seconds = end.tv_sec - begin.tv_sec;
+    long microseconds = end.tv_usec - begin.tv_usec;
+    double elapsed = seconds + microseconds * 1e-6;
+    printf("\nTime measured: %.3f seconds.\n", elapsed);
+
+    dump_buf(dgst, dgst_len);
+    fclose(finp);
+}
