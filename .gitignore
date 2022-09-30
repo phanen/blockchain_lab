@@ -1,10 +1,10 @@
 
-
 bin/
 lib/
 build/
+.vscode/**
 
-
+/test.cc
 *.out
 *.o
 *.a
