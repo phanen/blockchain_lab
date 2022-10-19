@@ -1,10 +1,18 @@
-
+# build dir
 bin/
 lib/
 build/
+
+# config
 .vscode/**
 
+# playground
 /test.cc
+
+# binary
 *.out
 *.o
 *.a
+
+# data
+*.csv
