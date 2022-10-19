@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 #include <iostream>
+#include <stdint.h>
 #include <string.h>
 
 // STATE always process in word
@@ -9,16 +9,15 @@
 #define SHA1_STATE_SZ_IN_WD 5  //  5w 20B 160b
 #define SHA1_BLOCK_SZ_IN_BT 64 // 16w 64B 512b
 
-typedef struct sha1_ctx_t
-{
-    // counter of message bit length
-    uint64_t cnt;
-    // num of remain bytes in remain incomplete block
-    size_t num;
-    // middle state of iteration
-    uint32_t state[SHA1_STATE_SZ_IN_WD];
-    // store remain incomplete block in a flow
-    uint8_t remain[SHA1_BLOCK_SZ_IN_BT];
+typedef struct sha1_ctx_t {
+  // counter of message bit length
+  uint64_t cnt;
+  // num of remain bytes in remain incomplete block
+  size_t num;
+  // middle state of iteration
+  uint32_t state[SHA1_STATE_SZ_IN_WD];
+  // store remain incomplete block in a flow
+  uint8_t remain[SHA1_BLOCK_SZ_IN_BT];
 } sha1_ctx_t;
 
 /**
