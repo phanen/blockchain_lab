@@ -244,15 +244,15 @@ int main() {
   // hash to get 16 messages
   get_msg();
 
-  auto tab1 = brute_force_target1();
-  save2file1("./strategy1_target1.csv", tab1);
+  //   auto tab1 = brute_force_target1();
+  //   save2file1("./strategy1_target1.csv", tab1);
 
-  auto tab2 = brute_force_target2();
-  save2file1("./strategy1_target2.csv", tab2);
+  //   auto tab2 = brute_force_target2();
+  //   save2file1("./strategy1_target2.csv", tab2);
 
   auto tab3 = random_target1();
-  save2file2("./strategy2_target2.csv", tab3);
+  save2file2("./strategy2_target1.csv", tab3);
 
-  auto tab4 = random_target2();
-  save2file2("./strategy2_target2.csv", tab4);
+  //   auto tab4 = random_target2();
+  //   save2file2("./strategy2_target2.csv", tab4);
 }
